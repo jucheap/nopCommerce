@@ -44,6 +44,30 @@ namespace Nop.Services.Orders
 
         #endregion
 
+        #region Utilities
+
+        /// <summary>
+        /// Update reward points balance if necessary
+        /// </summary>
+        /// <param name="query">Input query</param>
+        /// <returns>Output query</returns>
+        protected IQueryable<RewardPointsHistory> UpdateRewardPointsBalance(IQueryable<RewardPointsHistory> query)
+        {
+            var rewardPoints = query.ToList();
+            for (var i = rewardPoints.Count - 1; i >= 0; i--)
+            {
+                if (!rewardPoints[i].PointsBalance.HasValue && rewardPoints[i].CreatedOnUtc < DateTime.UtcNow)
+                {
+                    rewardPoints[i].PointsBalance = rewardPoints[i].Points + (rewardPoints.Count > 1 ? rewardPoints[i + 1].PointsBalance : 0);
+                    UpdateRewardPointsHistoryEntry(rewardPoints[i]);
+                }
+            }
+
+            return rewardPoints.AsQueryable();
+        }
+
+        #endregion
+
         #region Methods
 
         /// <summary>
@@ -60,13 +84,19 @@ namespace Nop.Services.Orders
             var query = _rphRepository.Table;
             if (customerId > 0)
                 query = query.Where(rph => rph.CustomerId == customerId);
-            if (!showHidden && !_rewardPointsSettings.PointsAccumulatedForAllStores)
+            if (!showHidden)
             {
+                //show only the points that already accrued
+                query = query.Where(rph => rph.CreatedOnUtc < DateTime.UtcNow);
+
                 //filter by store
-                var currentStoreId = _storeContext.CurrentStore.Id;
-                query = query.Where(rph => rph.StoreId == currentStoreId);
+                if (!_rewardPointsSettings.PointsAccumulatedForAllStores)
+                    query = query.Where(rph => rph.StoreId == _storeContext.CurrentStore.Id);
             }
+
             query = query.OrderByDescending(rph => rph.CreatedOnUtc).ThenByDescending(rph => rph.Id);
+
+            query = UpdateRewardPointsBalance(query);
 
             var records = new PagedList<RewardPointsHistory>(query, pageIndex, pageSize);
             return records;
@@ -81,9 +111,10 @@ namespace Nop.Services.Orders
         /// <param name="message">Message</param>
         /// <param name="usedWithOrder">The order for which points were redeemed (spent) as a payment</param>
         /// <param name="usedAmount">Used amount</param>
+        /// <param name="accrualDate">Date and time of accrual reward points; pass null to immediately accruing</param>
         public virtual void AddRewardPointsHistoryEntry(Customer customer,
             int points, int storeId, string message = "",
-            Order usedWithOrder = null, decimal usedAmount = 0M)
+            Order usedWithOrder = null, decimal usedAmount = 0M, DateTime? accrualDate = null)
         {
             if (customer == null)
                 throw new ArgumentNullException("customer");
@@ -97,10 +128,10 @@ namespace Nop.Services.Orders
                 StoreId = storeId,
                 UsedWithOrder = usedWithOrder,
                 Points = points,
-                PointsBalance = GetRewardPointsBalance(customer.Id, storeId) + points,
+                PointsBalance = accrualDate.HasValue ? null : (int?)(GetRewardPointsBalance(customer.Id, storeId) + points),
                 UsedAmount = usedAmount,
                 Message = message,
-                CreatedOnUtc = DateTime.UtcNow
+                CreatedOnUtc = accrualDate ?? DateTime.UtcNow
             };
 
             _rphRepository.Insert(rph);
@@ -122,10 +153,16 @@ namespace Nop.Services.Orders
                 query = query.Where(rph => rph.CustomerId == customerId);
             if (!_rewardPointsSettings.PointsAccumulatedForAllStores)
                 query = query.Where(rph => rph.StoreId == storeId);
+
+            //show only the points that already accrued
+            query = query.Where(rph => rph.CreatedOnUtc < DateTime.UtcNow);
+
             query = query.OrderByDescending(rph => rph.CreatedOnUtc).ThenByDescending(rph => rph.Id);
 
+            query = UpdateRewardPointsBalance(query);
+
             var lastRph = query.FirstOrDefault();
-            return lastRph != null ? lastRph.PointsBalance : 0;
+            return lastRph != null && lastRph.PointsBalance.HasValue ? lastRph.PointsBalance.Value : 0;
         }
 
         /// <summary>

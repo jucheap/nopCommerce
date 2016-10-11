@@ -6873,6 +6873,18 @@
   <LocaleResource Name="Admin.Configuration.Settings.RewardPoints.PointsForPurchases_Awarded.Pending">
     <Value>Order status could not be set to Pending</Value>
   </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.RewardPoints.AwardImmediately">
+    <Value>Immediately awarding</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.RewardPoints.AwardImmediately.Hint">
+    <Value>Immediately award reward points</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.RewardPoints.AwardingDelay">
+    <Value>Awarding delay</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.RewardPoints.AwardingDelay.Hint">
+    <Value>Specify delay before awarding</Value>
+  </LocaleResource>
   <LocaleResource Name="Admin.Configuration.Settings.RewardPoints.PointsForPurchases_Canceled">
     <Value>Canceled order status</Value>
   </LocaleResource>
@@ -9122,6 +9134,9 @@
   </LocaleResource>
   <LocaleResource Name="Admin.Customers.Customers.RewardPoints">
     <Value>Reward points</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Customers.Customers.RewardPoints.AccruedLater">
+    <Value>The points will be accrued on {0}</Value>
   </LocaleResource>
   <LocaleResource Name="Admin.Customers.Customers.RewardPoints.AddButton">
     <Value>Add (reduce) reward points</Value>

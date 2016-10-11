@@ -36,6 +36,14 @@ namespace Nop.Admin.Models.Settings
         public int PointsForPurchases_Awarded { get; set; }
         public bool PointsForPurchases_Awarded_OverrideForStore { get; set; }
 
+        [NopResourceDisplayName("Admin.Configuration.Settings.RewardPoints.AwardImmediately")]
+        public bool AwardImmediately { get; set; }
+
+        [NopResourceDisplayName("Admin.Configuration.Settings.RewardPoints.AwardingDelay")]
+        public int AwardingDelay { get; set; }
+        public bool AwardingDelay_OverrideForStore { get; set; }
+        public int AwardingDelayPeriodId { get; set; }
+
         [NopResourceDisplayName("Admin.Configuration.Settings.RewardPoints.PointsForPurchases_Canceled")]
         public int PointsForPurchases_Canceled { get; set; }
         public bool PointsForPurchases_Canceled_OverrideForStore { get; set; }

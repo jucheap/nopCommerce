@@ -587,11 +587,11 @@ namespace Nop.Web.Controllers
             var model = new CustomerRewardPointsModel();
             var list = _rewardPointService.GetRewardPointsHistory(customer.Id, pageIndex: --page ?? 0, pageSize: pageSize);
 
-            model.RewardPoints = list.Select(rph => 
+            model.RewardPoints = list.Where(rph => rph.PointsBalance.HasValue).Select(rph => 
                 new CustomerRewardPointsModel.RewardPointsHistoryModel
                 {
                     Points = rph.Points,
-                    PointsBalance = rph.PointsBalance,
+                    PointsBalance = rph.PointsBalance.Value,
                     Message = rph.Message,
                     CreatedOn = _dateTimeHelper.ConvertToUserTime(rph.CreatedOnUtc, DateTimeKind.Utc)
                 }).ToList();

@@ -356,6 +356,21 @@ set @resources='
   <LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowSkuOnProductDetailsPage.Hint">
     <Value>Check to show product SKU on the product details page in public store.</Value>
   </LocaleResource>
+  <LocaleResource Name="Admin.Customers.Customers.RewardPoints.AccruedLater">
+    <Value>The points will be accrued on {0}</Value>
+  </LocaleResource>
+    <LocaleResource Name="Admin.Configuration.Settings.RewardPoints.AwardImmediately">
+    <Value>Immediately awarding</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.RewardPoints.AwardImmediately.Hint">
+    <Value>Immediately award reward points</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.RewardPoints.AwardingDelay">
+    <Value>Awarding delay</Value>
+  </LocaleResource>
+  <LocaleResource Name="Admin.Configuration.Settings.RewardPoints.AwardingDelay.Hint">
+    <Value>Specify delay before awarding</Value>
+  </LocaleResource>
 </Language>
 '
 
@@ -985,4 +1000,24 @@ GO
 UPDATE [Setting] 
 SET [Name] = N'catalogsettings.showskuonproductdetailspage' 
 WHERE [Name] = N'catalogsettings.showproductsku'
+GO
+
+--update column
+ALTER TABLE [RewardPointsHistory] ALTER COLUMN [PointsBalance] int NULL
+GO
+
+--new setting
+IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'rewardpointssettings.awardingdelay')
+BEGIN
+	INSERT [Setting] ([Name], [Value], [StoreId])
+	VALUES (N'rewardpointssettings.awardingdelay', N'0', 0)
+END
+GO
+
+--new setting
+IF NOT EXISTS (SELECT 1 FROM [Setting] WHERE [name] = N'rewardpointssettings.awardingdelayperiodid')
+BEGIN
+	INSERT [Setting] ([Name], [Value], [StoreId])
+	VALUES (N'rewardpointssettings.awardingdelayperiodid', N'0', 0)
+END
 GO

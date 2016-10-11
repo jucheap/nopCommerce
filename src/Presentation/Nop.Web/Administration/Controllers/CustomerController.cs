@@ -1622,13 +1622,16 @@ namespace Nop.Admin.Controllers
                 Data = rewardPoints.Select(rph =>
                 {
                     var store = _storeService.GetStoreById(rph.StoreId);
+                    var accrualDate = _dateTimeHelper.ConvertToUserTime(rph.CreatedOnUtc, DateTimeKind.Utc);
+
                     return new CustomerModel.RewardPointsHistoryModel
                     {
                         StoreName = store != null ? store.Name : "Unknown",
                         Points = rph.Points,
-                        PointsBalance = rph.PointsBalance,
+                        PointsBalance = rph.PointsBalance.HasValue ? rph.PointsBalance.ToString()
+                            : string.Format(_localizationService.GetResource("Admin.Customers.Customers.RewardPoints.AccruedLater"), accrualDate),
                         Message = rph.Message,
-                        CreatedOn = _dateTimeHelper.ConvertToUserTime(rph.CreatedOnUtc, DateTimeKind.Utc)
+                        CreatedOn = accrualDate
                     };
                 }),
                 Total = rewardPoints.TotalCount

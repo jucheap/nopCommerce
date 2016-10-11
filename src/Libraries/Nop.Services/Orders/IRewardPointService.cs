@@ -1,3 +1,4 @@
+using System;
 using Nop.Core;
 using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Orders;
@@ -29,9 +30,10 @@ namespace Nop.Services.Orders
         /// <param name="message">Message</param>
         /// <param name="usedWithOrder">the order for which points were redeemed as a payment</param>
         /// <param name="usedAmount">Used amount</param>
+        /// <param name="accrualDate">Date and time of accrual reward points; pass null to immediately accruing</param>
         void AddRewardPointsHistoryEntry(Customer customer,
             int points, int storeId, string message = "",
-            Order usedWithOrder = null, decimal usedAmount = 0M);
+            Order usedWithOrder = null, decimal usedAmount = 0M, DateTime? accrualDate = null);
 
         /// <summary>
         /// Gets reward points balance

@@ -5965,6 +5965,8 @@ namespace Nop.Services.Installation
                 PointsForPurchases_Amount = 10,
                 PointsForPurchases_Points = 1,
                 PointsForPurchases_Awarded = OrderStatus.Complete,
+                AwardingDelay = 0,
+                AwardingDelayPeriodId = 0,
                 PointsForPurchases_Canceled = OrderStatus.Cancelled,
                 DisplayHowMuchWillBeEarned = true,
                 PointsAccumulatedForAllStores = true,
