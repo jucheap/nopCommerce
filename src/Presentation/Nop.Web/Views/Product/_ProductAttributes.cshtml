@@ -257,17 +257,26 @@
                                         <span class="color-container" title="@attributeName">
                                             <span class="color" style="background-color:@(attributeValue.ColorSquaresRgb);">&nbsp;</span>
                                         </span>
-                                        <input id="@(controlId)_@(attributeValue.Id)" type="radio" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected" />
+                                        <input id="@(controlId)_@(attributeValue.Id)" type="radio" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected"
+                                               @(attribute.Values.Any(value => value.CustomerEntersQty) ? Html.Raw(string.Format("onclick=\"showHideRadioQuantity('{0}')\"", controlId)) : null) />
                                     </label>
                                 </li>
                             }
                         </ul>
+                        foreach (var attributeValue in attribute.Values.Where(value => value.CustomerEntersQty))
+                        {
+                            <div id="@(controlId)_@(attributeValue.Id)_qty_box" style="display:none">
+                                <label for="@(controlId)_@(attributeValue.Id)_qty">@(T("Products.ProductAttributes.PriceAdjustment.Quantity").Text)</label>
+                                <input class="qty-box" type="text" name="@(controlId)_@(attributeValue.Id)_qty" id="@(controlId)_@(attributeValue.Id)_qty" value="@(attributeValue.Quantity)" />
+                            </div>
+                        }
                         <script type="text/javascript">
                             $(document).ready(function() {
                                 $('.attributes #color-squares-@(attribute.Id)').delegate('input', 'click', function(event) {
                                     $('.attributes #color-squares-@(attribute.Id)').find('li').removeClass('selected-value');
                                     $(this).closest('li').addClass('selected-value');
                                 });
+                                showHideRadioQuantity("@controlId");
                             });
                         </script>
                             }
@@ -285,7 +294,8 @@
                                                 <span class="color-container">
                                                     <span class="color" style="background: url('@(attributeValue.ImageSquaresPictureModel.ImageUrl)') 50% 50% no-repeat;">&nbsp;</span>
                                                 </span>
-                                                <input id="@(controlId)_@(attributeValue.Id)" type="radio" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected"/>
+                                                <input id="@(controlId)_@(attributeValue.Id)" type="radio" name="@(controlId)" value="@attributeValue.Id" checked="@attributeValue.IsPreSelected"
+                                                       @(attribute.Values.Any(value => value.CustomerEntersQty) ? Html.Raw(string.Format("onclick=\"showHideRadioQuantity('{0}', true)\"", controlId)) : null) />
                                             </label>
                                             <div class="tooltip-container">
                                                 <div class="tooltip-header">@attributeName</div>
@@ -294,12 +304,20 @@
                                         </li>
                                     }
                                 </ul>
+                                foreach (var attributeValue in attribute.Values.Where(value => value.CustomerEntersQty))
+                                {
+                                    <div id="@(controlId)_@(attributeValue.Id)_qty_box" style="display:none">
+                                        <label for="@(controlId)_@(attributeValue.Id)_qty">@(T("Products.ProductAttributes.PriceAdjustment.Quantity").Text)</label>
+                                        <input class="qty-box" type="text" name="@(controlId)_@(attributeValue.Id)_qty" id="@(controlId)_@(attributeValue.Id)_qty" value="@(attributeValue.Quantity)" />
+                                    </div>
+                                }
                                 <script type="text/javascript">
                             $(document).ready(function() {
                                 $('.attributes #color-squares-@(attribute.Id)').delegate('input', 'click', function(event) {
                                     $('.attributes #color-squares-@(attribute.Id)').find('li').removeClass('selected-value');
                                     $(this).closest('li').addClass('selected-value');
                                 });
+                                showHideRadioQuantity("@controlId", true);
                             });
                                 </script>
                             }
